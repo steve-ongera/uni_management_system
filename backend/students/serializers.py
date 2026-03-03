@@ -40,7 +40,7 @@ class FeePaymentSerializer(serializers.ModelSerializer):
 
 
 class FeeBalanceSerializer(serializers.ModelSerializer):
-    balance = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='balance')
+    balance = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     semester_label = serializers.CharField(source='semester.__str__', read_only=True)
 
     class Meta:
