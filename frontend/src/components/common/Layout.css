@@ -10,15 +10,42 @@
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  transition: margin-left var(--transition-slow);
 }
 
 .layout-content {
-  padding: 2rem 2.5rem;
-  max-width: 1400px;
-  animation: fadeIn 0.3s ease;
+  padding: 1.75rem 2rem;
+  max-width: 1380px;
+  width: 100%;
+  flex: 1;
+  animation: fadeIn 0.28s ease;
 }
 
-@media (max-width: 768px) {
-  .layout-main { margin-left: 0; }
-  .layout-content { padding: 1.25rem 1rem; }
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 99;
+  animation: fadeIn 0.18s ease;
+}
+.sidebar-overlay.visible { display: block; }
+
+@media (max-width: 900px) {
+  .layout-main {
+    margin-left: 0;
+  }
+  .layout-content {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-content {
+    padding: 1rem 0.875rem;
+  }
 }
