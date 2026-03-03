@@ -1,0 +1,22 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout-main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--surface);
+}
+
+.layout-content {
+  padding: 2rem 2.5rem;
+  max-width: 1400px;
+  animation: fadeIn 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .layout-main { margin-left: 0; }
+  .layout-content { padding: 1.25rem 1rem; }
+}
