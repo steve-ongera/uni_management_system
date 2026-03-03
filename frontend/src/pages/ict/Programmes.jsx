@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { coreAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -10,13 +10,13 @@ export default function ICTProgrammes({ user }) {
   const [msg, setMsg] = useState({ text: '', type: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => { init(); }, []);
-
-  const init = async () => {
+  const init = useCallback(async () => {
     const [{ data: progs }, { data: depts }] = await Promise.all([coreAPI.getProgrammes(), coreAPI.getDepartments()]);
     setProgrammes(progs.results || progs);
     setDepartments(depts.results || depts);
-  };
+  }, []);
+
+  useEffect(() => { init(); }, [init]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

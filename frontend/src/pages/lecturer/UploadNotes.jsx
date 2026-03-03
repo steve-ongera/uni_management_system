@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { lecturerAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -12,9 +12,7 @@ export default function LecturerNotes({ user }) {
   const [msg, setMsg] = useState({ text: '', type: '' });
   const fileRef = useRef();
 
-  useEffect(() => { init(); }, []);
-
-  const init = async () => {
+  const init = useCallback(async () => {
     try {
       const [{ data: dash }, { data: notesData }] = await Promise.all([
         lecturerAPI.getDashboard(),
@@ -23,7 +21,9 @@ export default function LecturerNotes({ user }) {
       setAllocations(dash.allocations || []);
       setNotes(notesData.results || notesData);
     } catch { } finally { setLoading(false); }
-  };
+  }, []);
+
+  useEffect(() => { init(); }, [init]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

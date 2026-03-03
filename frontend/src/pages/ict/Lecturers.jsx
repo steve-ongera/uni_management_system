@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ictAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -10,9 +10,13 @@ export default function ICTLecturers({ user }) {
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState({ text: '', type: '' });
 
-  useEffect(() => {
-    ictAPI.getAllLecturers().then(({ data }) => { setLecturers(data.results || data); setLoading(false); });
+  const fetchLecturers = useCallback(async () => {
+    const { data } = await ictAPI.getAllLecturers();
+    setLecturers(data.results || data);
+    setLoading(false);
   }, []);
+
+  useEffect(() => { fetchLecturers(); }, [fetchLecturers]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -22,8 +26,7 @@ export default function ICTLecturers({ user }) {
       setMsg({ text: 'Lecturer created!', type: 'success' });
       setShowForm(false);
       setForm({ staff_id: '', first_name: '', last_name: '', phone: '', password: '' });
-      const { data } = await ictAPI.getAllLecturers();
-      setLecturers(data.results || data);
+      fetchLecturers();
     } catch (e) {
       setMsg({ text: e.response?.data?.error || 'Failed.', type: 'error' });
     } finally { setSubmitting(false); }

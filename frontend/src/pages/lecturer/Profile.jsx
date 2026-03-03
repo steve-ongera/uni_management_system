@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { lecturerAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
 export default function LecturerProfile({ user }) {
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    lecturerAPI.getProfile().then(({ data }) => setProfile(data));
+  const fetchProfile = useCallback(async () => {
+    const { data } = await lecturerAPI.getProfile();
+    setProfile(data);
   }, []);
+
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
 
   if (!profile) return <Layout role="lecturer" user={user}><div className="skeleton" style={{ height: 400, margin: '2rem', borderRadius: 12 }} /></Layout>;
 

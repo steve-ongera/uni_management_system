@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { studentAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -14,12 +14,16 @@ export default function StudentMarks({ user }) {
   const [marks, setMarks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    studentAPI.getMarks().then(({ data }) => {
+  const fetchMarks = useCallback(async () => {
+    try {
+      const { data } = await studentAPI.getMarks();
       setMarks(data.results || data);
+    } finally {
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }
   }, []);
+
+  useEffect(() => { fetchMarks(); }, [fetchMarks]);
 
   const gpa = marks.length > 0
     ? (marks.reduce((sum, m) => sum + (Number(m.total_score) || 0), 0) / marks.length).toFixed(1)

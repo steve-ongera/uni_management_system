@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ictAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -9,9 +9,16 @@ export default function ICTLogs({ user }) {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    ictAPI.getLogs().then(({ data }) => { setLogs(data.results || data); setLoading(false); });
+  const fetchLogs = useCallback(async () => {
+    try {
+      const { data } = await ictAPI.getLogs();
+      setLogs(data.results || data);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   return (
     <Layout role="ict" user={user}>

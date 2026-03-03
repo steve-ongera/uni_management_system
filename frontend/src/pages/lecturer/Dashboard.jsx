@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { lecturerAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -6,10 +6,16 @@ export default function LecturerDashboard({ user }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    lecturerAPI.getDashboard().then(({ data: d }) => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
+  const fetchDashboard = useCallback(async () => {
+    try {
+      const { data: d } = await lecturerAPI.getDashboard();
+      setData(d);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
   if (loading) return (
     <Layout role="lecturer" user={user}>

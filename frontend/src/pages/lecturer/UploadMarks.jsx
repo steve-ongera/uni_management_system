@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { lecturerAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -11,12 +11,16 @@ export default function LecturerMarks({ user }) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState({ text: '', type: '' });
 
-  useEffect(() => {
-    lecturerAPI.getDashboard().then(({ data }) => {
+  const fetchAllocations = useCallback(async () => {
+    try {
+      const { data } = await lecturerAPI.getDashboard();
       setAllocations(data.allocations || []);
+    } finally {
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }
   }, []);
+
+  useEffect(() => { fetchAllocations(); }, [fetchAllocations]);
 
   const loadStudents = async (alloc) => {
     setSelectedAlloc(alloc);

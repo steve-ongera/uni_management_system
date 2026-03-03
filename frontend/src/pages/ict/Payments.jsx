@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ictAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -8,22 +8,22 @@ export default function ICTPayments({ user }) {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
 
-  useEffect(() => { load(); }, [filter]);
-
-  const load = async () => {
+  const load = useCallback(async (currentFilter) => {
     setLoading(true);
     try {
-      const { data } = await ictAPI.getPayments(filter !== 'all' ? { status: filter } : {});
+      const { data } = await ictAPI.getPayments(currentFilter !== 'all' ? { status: currentFilter } : {});
       setPayments(data.results || data);
     } catch { } finally { setLoading(false); }
-  };
+  }, []);
+
+  useEffect(() => { load(filter); }, [load, filter]);
 
   const confirm = async (id) => {
-    try { await ictAPI.confirmPayment(id); setMsg('Payment confirmed!'); load(); }
+    try { await ictAPI.confirmPayment(id); setMsg('Payment confirmed!'); load(filter); }
     catch { setMsg('Failed to confirm.'); }
   };
   const reject = async (id) => {
-    try { await ictAPI.rejectPayment(id); setMsg('Payment rejected.'); load(); }
+    try { await ictAPI.rejectPayment(id); setMsg('Payment rejected.'); load(filter); }
     catch { setMsg('Failed.'); }
   };
 

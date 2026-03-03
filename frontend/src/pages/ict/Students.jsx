@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ictAPI, coreAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -16,16 +16,16 @@ export default function ICTStudents({ user }) {
   const [msg, setMsg] = useState({ text: '', type: '' });
   const [search, setSearch] = useState('');
 
-  useEffect(() => { init(); }, []);
-
-  const init = async () => {
+  const init = useCallback(async () => {
     const [{ data: studs }, { data: progs }] = await Promise.all([
       ictAPI.getAllStudents(), coreAPI.getProgrammes()
     ]);
     setStudents(studs.results || studs);
     setProgrammes(progs.results || progs);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => { init(); }, [init]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

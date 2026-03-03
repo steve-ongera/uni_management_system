@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ictAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -8,22 +8,23 @@ export default function ICTSemesterReports({ user }) {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
 
-  useEffect(() => { load(); }, [filter]);
-
-  const load = async () => {
+  const load = useCallback(async (currentFilter) => {
     setLoading(true);
     try {
-      const params = filter === 'pending' ? { approved: 'false' } : filter === 'approved' ? { approved: 'true' } : {};
+      const params = currentFilter === 'pending' ? { approved: 'false' }
+        : currentFilter === 'approved' ? { approved: 'true' } : {};
       const { data } = await ictAPI.getSemesterReports(params);
       setReports(data.results || data);
     } catch { } finally { setLoading(false); }
-  };
+  }, []);
+
+  useEffect(() => { load(filter); }, [load, filter]);
 
   const approve = async (id) => {
     try {
       await ictAPI.approveReport(id);
       setMsg('Report approved!');
-      load();
+      load(filter);
     } catch { setMsg('Failed.'); }
   };
 
@@ -31,7 +32,7 @@ export default function ICTSemesterReports({ user }) {
     try {
       await ictAPI.rejectReport(id);
       setMsg('Report rejected.');
-      load();
+      load(filter);
     } catch { setMsg('Failed.'); }
   };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ictAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -6,10 +6,16 @@ export default function ICTDashboard({ user }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    ictAPI.getDashboard().then(({ data: d }) => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
+  const fetchDashboard = useCallback(async () => {
+    try {
+      const { data: d } = await ictAPI.getDashboard();
+      setData(d);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
   if (loading) return <Layout role="ict" user={user}><div style={{ padding: '2rem' }}>{[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 80, marginBottom: 16, borderRadius: 12 }} />)}</div></Layout>;
 

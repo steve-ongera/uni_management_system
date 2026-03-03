@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { studentAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -6,10 +6,16 @@ export default function StudentProfile({ user }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    studentAPI.getProfile().then(({ data }) => { setProfile(data); setLoading(false); })
-      .catch(() => setLoading(false));
+  const fetchProfile = useCallback(async () => {
+    try {
+      const { data } = await studentAPI.getProfile();
+      setProfile(data);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
 
   if (loading) return <Layout role="student" user={user}><div className="skeleton" style={{ height: 400, margin: '2rem', borderRadius: 12 }} /></Layout>;
 

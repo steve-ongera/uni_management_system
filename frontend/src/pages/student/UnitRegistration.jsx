@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { studentAPI, coreAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -9,9 +9,7 @@ export default function UnitRegistration({ user }) {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState({ text: '', type: '' });
 
-  useEffect(() => { init(); }, []);
-
-  const init = async () => {
+  const init = useCallback(async () => {
     try {
       const [{ data: dash }] = await Promise.all([studentAPI.getDashboard()]);
       setDashboard(dash);
@@ -32,7 +30,9 @@ export default function UnitRegistration({ user }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { init(); }, [init]);
 
   const register = async (unitId) => {
     if (!dashboard?.active_semester_id) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { studentAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -6,12 +6,16 @@ export default function StudentNotes({ user }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    studentAPI.getNotes().then(({ data }) => {
+  const fetchNotes = useCallback(async () => {
+    try {
+      const { data } = await studentAPI.getNotes();
       setNotes(data.results || data);
+    } finally {
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }
   }, []);
+
+  useEffect(() => { fetchNotes(); }, [fetchNotes]);
 
   const grouped = notes.reduce((acc, n) => {
     const key = n.unit_name || 'Other';

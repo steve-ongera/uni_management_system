@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { studentAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -12,9 +12,7 @@ export default function StudentFees({ user }) {
   const [msg, setMsg] = useState({ text: '', type: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => { init(); }, []);
-
-  const init = async () => {
+  const init = useCallback(async () => {
     try {
       const [{ data: pays }, { data: bals }, { data: dash }] = await Promise.all([
         studentAPI.getFeePayments(),
@@ -28,7 +26,9 @@ export default function StudentFees({ user }) {
         setSemesters([{ id: dash.active_semester_id, label: dash.active_semester }]);
       }
     } catch { } finally { setLoading(false); }
-  };
+  }, []);
+
+  useEffect(() => { init(); }, [init]);
 
   const handlePay = async (e) => {
     e.preventDefault();

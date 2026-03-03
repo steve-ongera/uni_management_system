@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ictAPI, coreAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -11,16 +11,16 @@ export default function ICTSemesters({ user }) {
   const [msg, setMsg] = useState({ text: '', type: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => { init(); }, []);
-
-  const init = async () => {
+  const init = useCallback(async () => {
     const [{ data: sems }, { data: ys }, { data: progs }] = await Promise.all([
       coreAPI.getSemesters(), coreAPI.getAcademicYears(), coreAPI.getProgrammes()
     ]);
     setSemesters(sems.results || sems);
     setYears(ys.results || ys);
     setProgrammes(progs.results || progs);
-  };
+  }, []);
+
+  useEffect(() => { init(); }, [init]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
