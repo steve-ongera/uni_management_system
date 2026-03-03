@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { studentAPI } from '../../services/api';
 import Layout from '../../components/common/Layout';
 
@@ -8,9 +8,7 @@ export default function StudentDashboard({ user }) {
   const [reporting, setReporting] = useState(false);
   const [msg, setMsg] = useState('');
 
-  useEffect(() => { fetchDashboard(); }, []);
-
-  const fetchDashboard = async () => {
+  const fetchDashboard = useCallback(async () => {
     try {
       const { data: d } = await studentAPI.getDashboard();
       setData(d);
@@ -19,7 +17,9 @@ export default function StudentDashboard({ user }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
   const handleReport = async () => {
     if (!data?.active_semester_id) return;
