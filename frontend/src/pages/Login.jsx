@@ -7,6 +7,7 @@ export default function Login({ onLogin }) {
   const [form, setForm] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -32,89 +33,109 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="login-page">
-      <div className="login-bg">
-        <div className="login-bg-circle c1" />
-        <div className="login-bg-circle c2" />
-        <div className="login-bg-circle c3" />
-      </div>
+      <div className="login-card animate-fade">
 
-      <div className="login-container">
-        <div className="login-left">
-          <div className="login-left-content">
-            <div className="login-logo">U</div>
-            <h1 className="login-heading">UniManage</h1>
-            <p className="login-tagline">Integrated University Management System</p>
-            <div className="login-features">
-              <div className="login-feature">
-                <span className="login-feature-icon">🎓</span>
-                <span>Student Portal — Register units, view marks & pay fees</span>
-              </div>
-              <div className="login-feature">
-                <span className="login-feature-icon">🧑‍🏫</span>
-                <span>Lecturer Portal — Upload marks & share study notes</span>
-              </div>
-              <div className="login-feature">
-                <span className="login-feature-icon">🛠️</span>
-                <span>ICT Admin — Manage all academic operations</span>
-              </div>
-            </div>
+        {/* Logo + branding */}
+        <div className="login-brand">
+          <div className="login-logo">
+            <img
+              src="/university_logo.png"
+              alt="University Logo"
+              onError={e => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <span className="login-logo-fallback">U</span>
+          </div>
+          <div>
+            <div className="login-title">UniManage</div>
+            <div className="login-subtitle">University Management System</div>
           </div>
         </div>
 
-        <div className="login-right">
-          <div className="login-card">
-            <div className="login-card-header">
-              <h2 className="login-title">Welcome Back</h2>
-              <p className="login-subtitle">Sign in to your portal</p>
+        <div className="login-divider" />
+
+        <div className="login-card-header">
+          <h2 className="login-heading">Sign in</h2>
+          <p className="login-tagline">Access your portal using your credentials below.</p>
+        </div>
+
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: '1.25rem' }}>
+            <i className="bi bi-exclamation-circle" />
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="login-form">
+          {/* Username */}
+          <div className="form-group">
+            <label className="form-label">Username / Registration Number</label>
+            <div className="login-input-wrap">
+              <i className="bi bi-person login-input-icon" />
+              <input
+                className="form-input login-input-padded"
+                type="text"
+                placeholder="e.g. SC211/0530/2022 or STAFF001"
+                value={form.username}
+                onChange={e => setForm({ ...form, username: e.target.value })}
+                required
+                autoFocus
+                autoComplete="username"
+              />
             </div>
+          </div>
 
-            {error && (
-              <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
-                <span>⚠️</span> {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="login-form">
-              <div className="form-group">
-                <label className="form-label">Username / Registration Number</label>
-                <input
-                  className="form-input"
-                  type="text"
-                  placeholder="e.g. SC211/0530/2022 or STAFF001"
-                  value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  required
-                  autoFocus
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Password / KCSE Index Number</label>
-                <input
-                  className="form-input"
-                  type="password"
-                  placeholder="Students: your KCSE index e.g. 0011/8278/2019"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="login-hint">
-                <div className="login-hint-item">
-                  <strong>Student:</strong> Username = Reg No. &nbsp;|&nbsp; Password = KCSE Index
-                </div>
-                <div className="login-hint-item">
-                  <strong>Lecturer/ICT:</strong> Username = Staff ID &nbsp;|&nbsp; Password as set
-                </div>
-              </div>
-
-              <button type="submit" className="btn btn-primary btn-lg login-submit" disabled={loading}>
-                {loading ? <><span className="spinner" style={{width:18,height:18}} /> Signing In...</> : 'Sign In →'}
+          {/* Password */}
+          <div className="form-group">
+            <label className="form-label">Password / KCSE Index Number</label>
+            <div className="login-input-wrap">
+              <i className="bi bi-lock login-input-icon" />
+              <input
+                className="form-input login-input-padded login-input-padded-right"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Students: KCSE index e.g. 0011/8278/2019"
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })}
+                required
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="login-eye-btn"
+                onClick={() => setShowPassword(v => !v)}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} />
               </button>
-            </form>
+            </div>
           </div>
-        </div>
+
+          {/* Credential hint */}
+          <div className="login-hint">
+            <div className="login-hint-row">
+              <i className="bi bi-mortarboard" />
+              <span><strong>Student:</strong> Reg No. &amp; KCSE Index Number</span>
+            </div>
+            <div className="login-hint-row">
+              <i className="bi bi-person-workspace" />
+              <span><strong>Lecturer / ICT:</strong> Staff ID &amp; assigned password</span>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary login-submit"
+            disabled={loading}
+          >
+            {loading
+              ? <><span className="spinner" style={{ width: 16, height: 16 }} /> Signing In...</>
+              : <><i className="bi bi-box-arrow-in-right" /> Sign In</>
+            }
+          </button>
+        </form>
       </div>
     </div>
   );
